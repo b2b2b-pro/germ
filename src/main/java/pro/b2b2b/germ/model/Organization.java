@@ -10,9 +10,7 @@ import java.util.Objects;
 @Entity
 public class Organization {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private @Id @GeneratedValue Long id;
     private String shortName;
     private String fullName;
     private String inn;

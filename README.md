@@ -1,11 +1,27 @@
-# Прототип проекта на java
+## Прототип проекта на java
 
-curl -v http://localhost:8080/organizations
 
+# Подёргать за "ручки":
+
+Информация по организации:
 curl -v http://localhost:8080/organizations/1 | json_pp
 
-curl -X POST localhost:8080/organizations -H 'Content-type:application/json' -d '{"shortName": "фирмА3", "fullName": "Тестовая компания3","inn": "247778883", "kpp": "241113"}'
+Информация по всем организациям:
+curl -v http://localhost:8080/organizations | json_pp
 
-curl -X PUT localhost:8080/organizations/53 -H 'Content-type:application/json' -d '{"shortName": "СФУ", "fullName": "Во истину"}'
+Добавить организацию:
+curl -v -X POST localhost:8080/organizations -H 'Content-type:application/json' -d '{"shortName": "Шорт073", "fullName": "Фулл 073","inn": "24073", "kpp": "073"}' | json_pp
 
-curl -X DELETE localhost:8080/organizations/52
+Обновить поля в организации
+curl -v -X PUT localhost:8080/organizations/53 -H 'Content-type:application/json' -d '{"shortName": "СФУ", "fullName": "Во истину"}' | json_pp
+
+Удалить организацию
+curl -v -X DELETE localhost:8080/organizations/52
+
+# TODO
+
+Добавить сущность "Долг" со статусами
+
+Обеспечить уникальность пары ИНН + КПП
+
+P.S. База данных поднимается отдельно

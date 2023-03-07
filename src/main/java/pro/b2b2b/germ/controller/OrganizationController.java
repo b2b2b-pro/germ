@@ -31,18 +31,6 @@ public class OrganizationController {
         this.assembler = assembler;
     }
 
-    // Aggregate root
-    // tag::get-aggregate-root[]
-    @GetMapping("/organizations")
-
-    List<Organization> all() {
-            List<Organization> result = new ArrayList<>();
-        repository.findAll().forEach(result::add);
-        return result;
-}
-
-    // end::get-aggregate-root[]
-
     @GetMapping("/organizations/{id}")
     EntityModel<Organization> one(@PathVariable Long id) {
 
@@ -52,31 +40,55 @@ public class OrganizationController {
         return assembler.toModel(organization);
     }
 
+    // Aggregate root
+    // tag::get-aggregate-root[]
+    @GetMapping("/organizations")
+    CollectionModel<EntityModel<Organization>> all() {
+
+        List<EntityModel<Organization>> organizations = repository.findAll().stream() //
+                .map(assembler::toModel)
+                .collect(Collectors.toList());
+
+        return CollectionModel.of(organizations, linkTo(methodOn(OrganizationController.class).all()).withSelfRel());
+    }
+    // end::get-aggregate-root[]
+
+
     @PostMapping("/organizations")
-    Organization newOrganization(@RequestBody Organization newOrganization) {
-        return repository.save(newOrganization);
+    ResponseEntity<?> newOrganization(@RequestBody Organization newOrganization) {
+        EntityModel<Organization> entityModel = assembler.toModel(repository.save(newOrganization));
+
+        return ResponseEntity //
+                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) //
+                .body(entityModel);
     }
 
-    @PutMapping("/organizations/{id}")
-   Organization replaceOrganization(@RequestBody Organization newOrganization, @PathVariable Long id) {
+   @PutMapping("/organizations/{id}")
+   ResponseEntity<?> replaceOrganization(@RequestBody Organization newOrganization, @PathVariable Long id) {
+      Organization updatedOrganization = repository.findById(id)
+        .map(organization -> {
+            organization.setFullName(newOrganization.getFullName() != null ? newOrganization.getFullName() : organization.getFullName());
+            organization.setShortName(newOrganization.getShortName() != null ? newOrganization.getShortName() : organization.getShortName());
+            organization.setInn(newOrganization.getInn() != null ? newOrganization.getInn() : organization.getInn());
+            organization.setKpp(newOrganization.getKpp() != null ? newOrganization.getKpp() : organization.getKpp());
+            return repository.save(organization);
+        })
+        .orElseGet(() -> {
+            newOrganization.setId(id);
+            return repository.save(newOrganization);
+        });
 
-    return repository.findById(id)
-      .map(organization -> {
-        organization.setFullName(newOrganization.getFullName() != null ? newOrganization.getFullName() : organization.getFullName());
-        organization.setShortName(newOrganization.getShortName() != null ? newOrganization.getShortName() : organization.getShortName());
-        organization.setInn(newOrganization.getInn() != null ? newOrganization.getInn() : organization.getInn());
-        organization.setKpp(newOrganization.getKpp() != null ? newOrganization.getKpp() : organization.getKpp());
-        return repository.save(organization);
-      })
-      .orElseGet(() -> {
-        newOrganization.setId(id);
-        return repository.save(newOrganization);
-      });
-  }
+      EntityModel<Organization> entityModel = assembler.toModel(updatedOrganization);
 
+      return ResponseEntity //
+              .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) //
+              .body(entityModel);
+   }
 
     @DeleteMapping("/organizations/{id}")
-    void deleteOrganization(@PathVariable Long id) {
+    ResponseEntity<?> deleteOrganization(@PathVariable Long id) {
         repository.deleteById(id);
+
+        return ResponseEntity.noContent().build();
     }
 }

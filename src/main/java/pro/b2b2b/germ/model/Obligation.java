@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
+import java.util.Date;
 import java.util.Objects;
 
 @Entity
@@ -15,14 +16,18 @@ public class Obligation {
     private Long debtorId;
     private Long creditorId;
     private Long cost;
+    private ObligationStatus status;
+    private Date paymentDate;
 
     public Obligation() {
     }
 
-    public Obligation(Long debtorId, Long creditorId, Long cost) {
+    public Obligation(Long debtorId, Long creditorId, Long cost, ObligationStatus status, Date paymentDate) {
         this.debtorId = debtorId;
         this.creditorId = creditorId;
         this.cost = cost;
+        this.status = status;
+        this.paymentDate = paymentDate;
     }
 
     @Override
@@ -30,12 +35,12 @@ public class Obligation {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Obligation that = (Obligation) o;
-        return Objects.equals(id, that.id);
+        return id.equals(that.id) && debtorId.equals(that.debtorId) && creditorId.equals(that.creditorId) && Objects.equals(cost, that.cost) && status == that.status && Objects.equals(paymentDate, that.paymentDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, debtorId, creditorId, cost, status, paymentDate);
     }
 
     @Override
@@ -45,6 +50,8 @@ public class Obligation {
                 ", debtorId=" + debtorId +
                 ", creditorId=" + creditorId +
                 ", cost=" + cost +
+                ", status=" + status +
+                ", paymentDate=" + paymentDate +
                 '}';
     }
 
@@ -78,5 +85,21 @@ public class Obligation {
 
     public void setCost(Long cost) {
         this.cost = cost;
+    }
+
+    public ObligationStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ObligationStatus status) {
+        this.status = status;
+    }
+
+    public Date getPaymentDate() {
+        return paymentDate;
+    }
+
+    public void setPaymentDate(Date paymentDate) {
+        this.paymentDate = paymentDate;
     }
 }

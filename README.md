@@ -1,7 +1,7 @@
-## Прототип проекта на java
+# Прототип проекта на java
 
 
-# Подёргать за "ручки":
+## Подёргать за "ручки":
 
 Информация по организации:
 curl -v http://localhost:8080/organizations/1 | json_pp
@@ -18,10 +18,12 @@ curl -v -X PUT localhost:8080/organizations/53 -H 'Content-type:application/json
 Удалить организацию
 curl -v -X DELETE localhost:8080/organizations/52
 
-# TODO
+## TODO
 
 Добавить сущность "Долг" со статусами
 
 Обеспечить уникальность пары ИНН + КПП
+
+Тесты
 
 P.S. База данных поднимается отдельно

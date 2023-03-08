@@ -1,5 +1,7 @@
 package pro.b2b2b.germ.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.http.HttpStatus;
@@ -25,6 +27,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class ObligationController {
     private final ObligationRepository obligationRepository;
     private final ObligationModelAssembler assembler;
+    private static final Logger log = LoggerFactory.getLogger(ObligationController.class);
 
     public ObligationController(ObligationRepository obligationRepository, ObligationModelAssembler assembler) {
         this.obligationRepository = obligationRepository;
@@ -34,6 +37,7 @@ public class ObligationController {
     @GetMapping("/obligations")
     CollectionModel<EntityModel<Obligation>> all() {
 
+        log.info("get obligations list");
         List<EntityModel<Obligation>> orders = obligationRepository.findAll().stream() //
                 .map(assembler::toModel) //
                 .collect(Collectors.toList());
@@ -44,7 +48,7 @@ public class ObligationController {
 
     @GetMapping("/obligations/{id}")
     EntityModel<Obligation> one(@PathVariable Long id) {
-
+        log.info("get obligation " + id);
         Obligation obligation = obligationRepository.findById(id) //
                 .orElseThrow(() -> new ObligationNotFoundException(id));
 
@@ -52,10 +56,12 @@ public class ObligationController {
     }
 
     @PostMapping("/obligations")
-    ResponseEntity<EntityModel<Obligation>> newOrder(@RequestBody Obligation obligation) {
+    ResponseEntity<EntityModel<Obligation>> newOrder(@RequestBody Obligation newobligation) {
 
-        obligation.setStatus(ObligationStatus.CONTRACT_IS_CONCLUDED);
-        Obligation newObligation = obligationRepository.save(obligation);
+        log.info("post obligation " + newobligation);
+
+        newobligation.setStatus(ObligationStatus.CONTRACT_IS_CONCLUDED);
+        Obligation newObligation = obligationRepository.save(newobligation);
 
         return ResponseEntity //
                 .created(linkTo(methodOn(ObligationController.class).one(newObligation.getId())).toUri()) //
@@ -64,6 +70,8 @@ public class ObligationController {
 
     @DeleteMapping("/obligations/{id}/cancel")
     ResponseEntity<?> cancel(@PathVariable Long id) {
+
+        log.info("delete obligation " + id);
 
         Obligation obligation =obligationRepository.findById(id) //
                 .orElseThrow(() -> new ObligationNotFoundException(id));

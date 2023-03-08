@@ -1,13 +1,11 @@
 package pro.b2b2b.germ.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.util.Objects;
 
 @Entity
+@Table(uniqueConstraints = { @UniqueConstraint(name = "UniqueInnAndKpp", columnNames = { "inn", "kpp" }) })
 public class Organization {
 
     private @Id @GeneratedValue Long id;

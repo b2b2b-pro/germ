@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.IanaLinkRelations;
@@ -25,6 +27,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 public class OrganizationController {
     private final OrganizationRepository repository;
     private final OrganizationModelAssembler assembler;
+    private static final Logger log = LoggerFactory.getLogger(ObligationController.class);
 
     public OrganizationController(OrganizationRepository repository, OrganizationModelAssembler assembler) {
         this.repository = repository;
@@ -33,6 +36,8 @@ public class OrganizationController {
 
     @GetMapping("/organizations/{id}")
     EntityModel<Organization> one(@PathVariable Long id) {
+
+        log.info("get organization " + id);
 
         Organization organization = repository.findById(id) //
                 .orElseThrow(() -> new OrganizationNotFoundException(id));
@@ -45,6 +50,8 @@ public class OrganizationController {
     @GetMapping("/organizations")
     CollectionModel<EntityModel<Organization>> all() {
 
+        log.info("get organizations list");
+
         List<EntityModel<Organization>> organizations = repository.findAll().stream() //
                 .map(assembler::toModel)
                 .collect(Collectors.toList());
@@ -56,6 +63,9 @@ public class OrganizationController {
 
     @PostMapping("/organizations")
     ResponseEntity<?> newOrganization(@RequestBody Organization newOrganization) {
+
+        log.info("post organization " + newOrganization);
+
         EntityModel<Organization> entityModel = assembler.toModel(repository.save(newOrganization));
 
         return ResponseEntity //
@@ -65,7 +75,10 @@ public class OrganizationController {
 
    @PutMapping("/organizations/{id}")
    ResponseEntity<?> replaceOrganization(@RequestBody Organization newOrganization, @PathVariable Long id) {
-      Organization updatedOrganization = repository.findById(id)
+
+       log.info("put organization " + id + " " + newOrganization);
+
+       Organization updatedOrganization = repository.findById(id)
         .map(organization -> {
             organization.setFullName(newOrganization.getFullName() != null ? newOrganization.getFullName() : organization.getFullName());
             organization.setShortName(newOrganization.getShortName() != null ? newOrganization.getShortName() : organization.getShortName());
@@ -87,6 +100,9 @@ public class OrganizationController {
 
     @DeleteMapping("/organizations/{id}")
     ResponseEntity<?> deleteOrganization(@PathVariable Long id) {
+
+        log.info("delete organization " + id);
+
         repository.deleteById(id);
 
         return ResponseEntity.noContent().build();

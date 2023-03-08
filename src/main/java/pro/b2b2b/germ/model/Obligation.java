@@ -1,20 +1,31 @@
 package pro.b2b2b.germ.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
 
 @Entity
-public class Obligation {
+public class Obligation implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private Long debtorId;
-    private Long creditorId;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    @ManyToOne
+    private Organization debtor;
+//    private Long debtorId;
+    @ManyToOne
+    private Organization creditor;
+//    private Long creditorId;
     private Long cost;
     private ObligationStatus status;
     private Date paymentDate;
@@ -22,9 +33,9 @@ public class Obligation {
     public Obligation() {
     }
 
-    public Obligation(Long debtorId, Long creditorId, Long cost, ObligationStatus status, Date paymentDate) {
-        this.debtorId = debtorId;
-        this.creditorId = creditorId;
+    public Obligation(Organization debtor, Organization creditor, Long cost, ObligationStatus status, Date paymentDate) {
+        this.debtor = debtor;
+        this.creditor = creditor;
         this.cost = cost;
         this.status = status;
         this.paymentDate = paymentDate;
@@ -35,48 +46,28 @@ public class Obligation {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Obligation that = (Obligation) o;
-        return id.equals(that.id) && debtorId.equals(that.debtorId) && creditorId.equals(that.creditorId) && Objects.equals(cost, that.cost) && status == that.status && Objects.equals(paymentDate, that.paymentDate);
+        return id.equals(that.id) && debtor.equals(that.debtor) && creditor.equals(that.creditor) && Objects.equals(cost, that.cost) && status == that.status && Objects.equals(paymentDate, that.paymentDate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, debtorId, creditorId, cost, status, paymentDate);
+        return Objects.hash(id, debtor, creditor, cost, status, paymentDate);
     }
 
-    @Override
-    public String toString() {
-        return "Obligation{" +
-                "id=" + id +
-                ", debtorId=" + debtorId +
-                ", creditorId=" + creditorId +
-                ", cost=" + cost +
-                ", status=" + status +
-                ", paymentDate=" + paymentDate +
-                '}';
+    public Organization getDebtor() {
+        return debtor;
     }
 
-    public Long getId() {
-        return id;
+    public void setDebtor(Organization debtor) {
+        this.debtor = debtor;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Organization getCreditor() {
+        return creditor;
     }
 
-    public Long getDebtorId() {
-        return debtorId;
-    }
-
-    public void setDebtorId(Long debtorId) {
-        this.debtorId = debtorId;
-    }
-
-    public Long getCreditorId() {
-        return creditorId;
-    }
-
-    public void setCreditorId(Long creditorId) {
-        this.creditorId = creditorId;
+    public void setCreditor(Organization creditor) {
+        this.creditor = creditor;
     }
 
     public Long getCost() {

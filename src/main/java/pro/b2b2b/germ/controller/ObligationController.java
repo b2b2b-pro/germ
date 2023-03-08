@@ -38,11 +38,11 @@ public class ObligationController {
     CollectionModel<EntityModel<Obligation>> all() {
 
         log.info("get obligations list");
-        List<EntityModel<Obligation>> orders = obligationRepository.findAll().stream() //
+        List<EntityModel<Obligation>> obligations = obligationRepository.findAll().stream() //
                 .map(assembler::toModel) //
                 .collect(Collectors.toList());
 
-        return CollectionModel.of(orders, //
+        return CollectionModel.of(obligations, //
                 linkTo(methodOn(ObligationController.class).all()).withSelfRel());
     }
 
@@ -56,7 +56,7 @@ public class ObligationController {
     }
 
     @PostMapping("/obligations")
-    ResponseEntity<EntityModel<Obligation>> newOrder(@RequestBody Obligation newobligation) {
+    ResponseEntity<EntityModel<Obligation>> newObligation(@RequestBody Obligation newobligation) {
 
         log.info("post obligation " + newobligation);
 

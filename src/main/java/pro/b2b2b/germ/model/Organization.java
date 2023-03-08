@@ -2,11 +2,12 @@ package pro.b2b2b.germ.model;
 
 import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
 @Table(uniqueConstraints = { @UniqueConstraint(name = "UniqueInnAndKpp", columnNames = { "inn", "kpp" }) })
-public class Organization {
+public class Organization implements Serializable {
 
     private @Id @GeneratedValue Long id;
     private String shortName;
